@@ -20,7 +20,24 @@
         .nav-pill.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(0, 200, 83, 0.3); }
         .content { flex: 1; padding: 15px; }
         .card-menu { background: white; border-radius: 25px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .btn-plus { background: var(--primary); color: white; border: none; width: 35px; height: 35px; border-radius: 10px; font-weight: bold; font-size: 20px; }
+        
+        /* PERBAIKAN TOMBOL TAMBAH AGAR PRESISI DI TENGAH */
+        .btn-plus { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            width: 35px; 
+            height: 35px; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            font-size: 20px;
+            display: flex;            /* Mengaktifkan flexbox */
+            align-items: center;      /* Menyelaraskan vertikal */
+            justify-content: center;   /* Menyelaraskan horizontal */
+            line-height: 0;           /* Menghapus spasi baris default browser */
+            padding: 0;               /* Menghapus padding default */
+        }
+
         .footer-cart { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: var(--primary); padding: 20px; border-radius: 25px 25px 0 0; color: white; z-index: 999; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: flex-end; }
         .sheet { background: white; width: 100%; max-width: 480px; border-radius: 30px 30px 0 0; padding: 25px; animation: slideUp 0.3s ease-out; }
@@ -156,7 +173,6 @@
         { name: 'Susu Putih', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
         { name: 'Susu Coklat', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
         { name: 'Nutrisari', price: 0, cat: 'non-coffe', addons: [{name:'Sweet Orange', price:5000}, {name:'Milky Orange', price:5000}, {name:'Sweet Mango', price:5000}, {name:'Anggur', price:5000}, {name:'jeruk Peras', price:5000}, {name:'Blewah', price:5000}, {name:'Milky Peach', price:5000}] }
-        
     ];
 
     let cart = [];
