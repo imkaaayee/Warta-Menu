@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warta Menu - Digital Ordering</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root { --primary: #00c853; }
+        body { background-color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        .app-mobile { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; overflow-x: hidden; }
+        .hidden { display: none !important; }
+        .header-section { background: var(--primary); height: 100px; border-radius: 0 0 50% 50% / 0 0 20% 20%; position: relative; display: flex; justify-content: center; }
+        .header-logo { background: white; padding: 10px 25px; border-radius: 15px; position: absolute; bottom: -20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: var(--primary); font-weight: 900; font-size: 20px; text-transform: uppercase; }
+        .nav-scroll { margin-top: 40px; display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; scrollbar-width: none; }
+        .nav-pill { padding: 12px 20px; border-radius: 15px; border: 1px solid #ddd; background: #f1f1f1; cursor: pointer; white-space: nowrap; font-size: 14px; color: #333; font-weight: 600; transition: 0.3s; }
+        .nav-pill.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(0, 200, 83, 0.3); }
+        .content { flex: 1; padding: 15px; }
+        .card-menu { background: white; border-radius: 25px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .btn-plus { background: var(--primary); color: white; border: none; width: 35px; height: 35px; border-radius: 10px; font-weight: bold; font-size: 20px; }
+        .footer-cart { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: var(--primary); padding: 20px; border-radius: 25px 25px 0 0; color: white; z-index: 999; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: flex-end; }
+        .sheet { background: white; width: 100%; max-width: 480px; border-radius: 30px 30px 0 0; padding: 25px; animation: slideUp 0.3s ease-out; }
+        .overlay-success { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .popup-card { background: white; width: 100%; max-width: 400px; border-radius: 35px; padding: 35px; text-align: center; position: relative; }
+        .check-icon { width: 90px; height: 90px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; margin: -80px auto 20px; border: 8px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .qris-screen { background: var(--primary); color: white; min-height: 100vh; text-align: center; padding: 40px 20px; }
+        .upload-area { border: 2px dashed rgba(255,255,255,0.5); padding: 20px; border-radius: 20px; margin: 20px 0; cursor: pointer; }
+        .disabled { opacity: 0.5; pointer-events: none; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="app-mobile shadow">
+    <div id="page-home">
+        <div class="header-section"><div class="header-logo">WARTA MENU</div></div>
+        <div class="nav-scroll" id="nav-container"></div>
+        <div class="content">
+            <h5 class="fw-bold mb-3" id="cat-title">Best Sellers</h5>
+            <div id="menu-list"></div>
+        </div>
+        <div id="cart-bar" class="footer-cart hidden">
+            <div class="d-flex justify-content-between fw-bold mb-2 px-2">
+                <span id="qty-text">0 item</span>
+                <span id="total-text">Rp 0</span>
+            </div>
+            <button class="btn btn-light w-100 fw-bold py-3 rounded-4 text-success shadow-sm" onclick="showCheckout()">LIHAT PESANAN</button>
+        </div>
+    </div>
+
+    <div id="page-checkout" class="hidden p-4 bg-white" style="min-height: 100vh;">
+        <div class="d-flex align-items-center mb-4">
+            <button class="btn btn-light rounded-circle me-3" onclick="hideCheckout()">✕</button>
+            <h5 class="fw-bold m-0 text-muted">Pesanan</h5>
+        </div>
+        <div class="mb-4">
+            <label class="fw-bold text-muted small mb-2">Nama Pemesan</label>
+            <input type="text" id="customer-name" class="form-control py-3 rounded-4 bg-light border-0 px-4" placeholder="Ketik nama kamu...">
+        </div>
+        <div id="checkout-items" class="mb-4"></div>
+        <h6 class="fw-bold text-muted mb-3">Metode Pembayaran</h6>
+        <div class="d-flex gap-3 mb-5">
+            <div id="pill-cash" class="nav-pill active flex-fill text-center py-3" onclick="setPayment('Cash', this)">Cash</div>
+            <div id="pill-qris" class="nav-pill flex-fill text-center py-3" onclick="setPayment('QRIS', this)">QRIS</div>
+        </div>
+        <div class="mt-auto pt-4 border-top">
+            <div class="d-flex justify-content-between h4 fw-bold mb-4">
+                <span class="text-muted">Total</span>
+                <span id="checkout-total-text">Rp 0</span>
+            </div>
+            <button class="btn btn-success w-100 py-4 rounded-4 fw-bold shadow-lg" onclick="processPayment()">KONFIRMASI</button>
+        </div>
+    </div>
+
+    <div id="page-qris" class="qris-screen hidden">
+        <div class="d-flex justify-content-between mb-4"><h5 class="fw-bold">Pembayaran QRIS</h5><span onclick="showCheckout()" style="cursor:pointer">✕</span></div>
+        <div class="bg-white p-4 d-inline-block rounded-4 mb-4 shadow-lg">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=WARTA-PAY" width="200">
+        </div>
+        <h2 class="fw-bold mb-4" id="qris-total-display">Rp 0</h2>
+        <div class="upload-area" onclick="document.getElementById('upload-ss').click()">
+            <p class="small fw-bold mb-2 text-white">Upload Bukti Screenshot</p>
+            <input type="file" id="upload-ss" accept="image/*" class="hidden" onchange="previewImage(this)">
+            <div id="preview-container" class="hidden mt-2"><img id="preview-ss" src="#" class="img-fluid rounded-3" style="max-height: 150px;"></div>
+            <span id="upload-placeholder" class="small opacity-75">Ketuk untuk pilih foto</span>
+        </div>
+        <button id="btn-konfirmasi-qris" class="btn btn-light text-success fw-bold w-100 py-3 rounded-4 disabled shadow" onclick="finishOrder('QRIS')">KONFIRMASI PEMBAYARAN</button>
+    </div>
+
+    <div id="page-success" class="overlay-success hidden">
+        <div class="popup-card shadow-lg">
+            <div class="check-icon">✓</div>
+            <h6 class="text-muted fw-bold mb-1">Thank You</h6>
+            <h4 class="fw-bold mb-1" id="success-title">Pesanan Diterima</h4>
+            <p class="small text-muted mb-4" style="font-size: 11px;">Pesanan Anda sedang diproses</p>
+            <hr>
+            <div class="text-start mb-4">
+                <p class="fw-bold mb-2 small">Pesanan</p>
+                <div id="success-items-list" class="small"></div>
+            </div>
+            <p class="text-muted small mb-0 fw-bold">TOTAL PEMBAYARAN</p>
+            <h2 class="fw-bold mb-4" id="success-total-text">Rp 0</h2>
+            <p id="success-msg" class="text-muted small mb-4 px-3"></p>
+            <button class="btn btn-success w-100 py-3 rounded-4 fw-bold shadow" onclick="location.reload()">SELESAI</button>
+        </div>
+    </div>
+
+    <div id="overlay-addon" class="overlay hidden"><div class="sheet" id="addon-content"></div></div>
+</div>
+
+<script>
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyAivSWrd8k-7lRDiqkyzauvcas7pndxhg",
+      authDomain: "warta-menu-e8351.firebaseapp.com",
+      databaseURL: "https://warta-menu-e8351-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "warta-menu-e8351",
+      storageBucket: "warta-menu-e8351.firebasestorage.app",
+      messagingSenderId: "661469070998",
+      appId: "1:661469070998:web:618c7b8852094a8b52e4b7",
+      measurementId: "G-BX79RL4FGX"
+    };
+
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.database();
+
+    const menus = [
+        { name: 'Indomie Goreng', price: 7000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Indomie Rendang (Goreng)', price: 8000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Indomie Aceh (Goreng)', price: 8000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Mie Kari Ayam (Kuah)', price: 7000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Mie Soto (Kuah)', price: 7000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Mie Ayam Bawang (Kuah)', price: 7000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Magelangan', price: 15000, cat: 'magelangan', addons: [] },
+        { name: 'Kentang Goreng', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Otak-otak', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Sosis', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Pisang Bakar', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Pisang Goreng', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Roti Bakar', price: 0, cat: 'snack', addons: [{name:'Keju', price:10000}, {name:'Coklat', price:10000}, {name:'Coklat Keju', price:12000}, {name:'Milo', price:15000}, {name:'Oreo', price:15000}, {name:'Blueberry', price:12000}, {name:'Strawberry', price:12000}] },
+        { name: 'Iced Good Day', price: 0, cat: 'coffe', addons: [{name:'Carabian', price:7000}, {name:'Chocochinno', price:7000}, {name:'Cappuchino', price:8000}]},
+        { name: 'Hot Good Day', price: 0, cat: 'coffe', addons: [{name:'Carabian', price:6000}, {name:'Chocochinno', price:6000}, {name:'Cappuchino', price:7000}]},
+        { name: 'Indocafe', price: 0, cat: 'coffe', addons: [{name:'Hot', price:5000}, {name:'Iced', price:6000}] },
+        { name: 'kapal Api', price: 0, cat: 'coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
+        { name: 'Air Putih', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:2000}, {name:'Iced', price:2000}] },
+        { name: 'Esteh', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
+        { name: 'Teh Tarik', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:7000}, {name:'Iced', price:8000}] },
+        { name: 'Milo', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:6000}, {name:'Iced', price:7000}] },
+        { name: 'Chocolatos Coklat', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:7000}, {name:'Iced', price:8000}] },
+        { name: 'Chocolatos Matcha', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:7000}, {name:'Iced', price:8000}] },
+        { name: 'Drink Beng-beng', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:7000}, {name:'Iced', price:8000}] },
+        { name: 'Susu Putih', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
+        { name: 'Susu Coklat', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
+        { name: 'Nutrisari', price: 0, cat: 'non-coffe', addons: [{name:'Sweet Orange', price:5000}, {name:'Milky Orange', price:5000}, {name:'Sweet Mango', price:5000}, {name:'Anggur', price:5000}, {name:'jeruk Peras', price:5000}, {name:'Blewah', price:5000}, {name:'Milky Peach', price:5000}] }
+        
+    ];
+
+    let cart = [];
+    let currentItem = null;
+    let selectedPay = 'Cash';
+
+    function changeCategory(cat, el) {
+        document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('cat-title').innerText = cat.toUpperCase();
+        const filtered = menus.filter(m => m.cat === cat);
+        document.getElementById('menu-list').innerHTML = filtered.map(m => `
+            <div class="card-menu shadow-sm" onclick="openModal('${m.name}', ${m.price})">
+                <div><h6>${m.name}</h6><p class="text-muted m-0">${m.price === 0 ? 'Pilih Varian' : 'Rp ' + m.price.toLocaleString()}</p></div>
+                <button class="btn-plus">+</button>
+            </div>`).join('');
+    }
+
+    function openModal(name, price) {
+        const menuData = menus.find(m => m.name === name);
+        currentItem = { name, price };
+        let addonHtml = menuData.addons.map(a => `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <input type="checkbox" class="addon-cb" value="${a.price}" data-name="${a.name}" onchange="updateAddonTotal()">
+                    <span class="small">${a.name}</span>
+                </div>
+                <span class="text-success fw-bold small">+Rp ${a.price.toLocaleString()}</span>
+            </div>`).join('') || '<p class="text-muted small">Tanpa tambahan.</p>';
+
+        document.getElementById('addon-content').innerHTML = `
+            <h5 class="fw-bold mb-3">${name}</h5><hr>
+            <p class="fw-bold small mb-3">Varian/Topping</p>
+            ${addonHtml}
+            <div class="d-flex justify-content-between fw-bold h5 my-4 pt-3 border-top">
+                <span>Total</span><span id="addon-total-text">Rp ${price.toLocaleString()}</span>
+            </div>
+            <button class="btn btn-success w-100 py-3 rounded-4 fw-bold shadow" onclick="handleAddToCart()">TAMBAHKAN</button>
+            <button class="btn btn-link w-100 text-muted mt-2 small text-decoration-none" onclick="closeAddon()">Batal</button>`;
+        document.getElementById('overlay-addon').classList.remove('hidden');
+    }
+
+    function updateAddonTotal() {
+        let top = 0;
+        document.querySelectorAll('.addon-cb:checked').forEach(cb => top += parseInt(cb.value));
+        document.getElementById('addon-total-text').innerText = 'Rp ' + (currentItem.price + top).toLocaleString();
+    }
+
+    function handleAddToCart() {
+        let tops = [];
+        let tPrice = 0;
+        document.querySelectorAll('.addon-cb:checked').forEach(cb => {
+            tops.push(cb.getAttribute('data-name'));
+            tPrice += parseInt(cb.value);
+        });
+        if (currentItem.price === 0 && tops.length === 0) return alert("Pilih varian rasa terlebih dahulu!");
+        cart.push({ name: currentItem.name, tops: tops, total: currentItem.price + tPrice });
+        updateCartBar();
+        closeAddon();
+    }
+
+    function updateCartBar() {
+        const cartBar = document.getElementById('cart-bar');
+        if(cart.length > 0) {
+            cartBar.classList.remove('hidden');
+            let t = cart.reduce((s, i) => s + i.total, 0);
+            document.getElementById('qty-text').innerText = cart.length + ' item';
+            document.getElementById('total-text').innerText = 'Rp ' + t.toLocaleString();
+        } else { cartBar.classList.add('hidden'); }
+    }
+
+    function showCheckout() {
+        document.getElementById('page-home').classList.add('hidden');
+        document.getElementById('page-checkout').classList.remove('hidden');
+        document.getElementById('page-qris').classList.add('hidden');
+        const list = document.getElementById('checkout-items');
+        list.innerHTML = cart.map(i => `
+            <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                <span><span class="fw-bold">${i.name}</span><br><small class="text-muted">${i.tops.join(', ')}</small></span>
+                <span class="fw-bold">Rp ${i.total.toLocaleString()}</span>
+            </div>`).join('');
+        document.getElementById('checkout-total-text').innerText = 'Rp ' + cart.reduce((s,i)=>s+i.total,0).toLocaleString();
+    }
+
+    function setPayment(m, el) {
+        selectedPay = m;
+        document.getElementById('pill-cash').classList.remove('active');
+        document.getElementById('pill-qris').classList.remove('active');
+        el.classList.add('active');
+    }
+
+    function processPayment() {
+        if(!document.getElementById('customer-name').value.trim()) return alert("Harap isi nama pemesan!");
+        if(selectedPay === 'QRIS') {
+            document.getElementById('page-checkout').classList.add('hidden');
+            document.getElementById('page-qris').classList.remove('hidden');
+            document.getElementById('qris-total-display').innerText = document.getElementById('checkout-total-text').innerText;
+        } else { finishOrder('Cash'); }
+    }
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('preview-ss').src = e.target.result;
+                document.getElementById('preview-container').classList.remove('hidden');
+                document.getElementById('upload-placeholder').classList.add('hidden');
+                document.getElementById('btn-konfirmasi-qris').classList.remove('disabled');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function finishOrder(method) {
+        const orderData = {
+            customer: document.getElementById('customer-name').value,
+            items: cart,
+            total: cart.reduce((s, i) => s + i.total, 0),
+            payment: method,
+            status: "Masuk",
+            waktu: new Date().toLocaleString()
+        };
+
+        db.ref('pesanan').push(orderData).then(() => {
+            document.getElementById('page-qris').classList.add('hidden');
+            document.getElementById('page-checkout').classList.add('hidden');
+            document.getElementById('page-success').classList.remove('hidden');
+            document.getElementById('success-total-text').innerText = 'Rp ' + orderData.total.toLocaleString();
+            document.getElementById('success-items-list').innerHTML = cart.map(i => `
+                <div class="d-flex justify-content-between mb-1">
+                    <span>${i.name}</span><span>Rp ${i.total.toLocaleString()}</span>
+                </div>`).join('');
+            document.getElementById('success-msg').innerText = method === 'Cash' ? "Silahkan ke Kasir untuk membayar" : "Pesanan Anda sedang diproses";
+        }).catch(err => alert("Error: " + err.message));
+    }
+
+    function hideCheckout() { document.getElementById('page-checkout').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); }
+    function closeAddon() { document.getElementById('overlay-addon').classList.add('hidden'); }
+    
+    // Auto Load Menu
+    const cats = ['mie series', 'magelangan', 'coffe', 'non-coffe', 'snack'];
+    document.getElementById('nav-container').innerHTML = cats.map((c, i) => `<div class="nav-pill ${i===0?'active':''}" onclick="changeCategory('${c}', this)">${c.toUpperCase()}</div>`).join('');
+    window.onload = () => changeCategory('mie series', document.querySelector('.nav-pill'));
+</script>
+</body>
+</html>
