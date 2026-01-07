@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #00c853; --secondary: #ffa000; }
+        :root { --primary: #0a6843; --secondary: #ffa000; }
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; margin: 0; }
         .admin-header { background: white; padding: 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #ddd; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .admin-content { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
@@ -22,13 +22,14 @@
         .btn-done { background: var(--primary); color: white; }
         .btn-del { background: #ffebee; color: #c62828; margin-top: 10px; }
         .hidden { display: none !important; }
+        .text-location { color: var(--primary); font-weight: bold; font-size: 12px; display: block; margin-top: 2px; }
     </style>
 </head>
 <body>
 
 <div class="admin-header">
     <div class="container d-flex justify-content-between align-items-center" style="max-width: 460px; margin: 0 auto;">
-        <h4 class="fw-bold m-0">Pesanan Masuk</h4>
+        <h4 class="fw-bold m-0" style="color: var(--primary);">Pesanan Masuk</h4>
         <span id="order-count" class="badge bg-success rounded-pill px-3 py-2">0</span>
     </div>
 </div>
@@ -36,9 +37,9 @@
 <div class="admin-content">
     <div id="audio-panel" class="mb-4">
         <button id="btn-audio" class="btn btn-warning w-100 fw-bold shadow-sm py-3 rounded-4" onclick="aktifkanSuara()">
-            🔔 AKTIFKAN SUARA NOTIFIKASI
+            🔔 AKTIFKAN NOTIFIKASI SUARA
         </button>
-        <p class="text-center text-muted mt-2 small" id="audio-msg">Wajib diklik agar Safari mengizinkan suara</p>
+        <p class="text-center text-muted mt-2 small" id="audio-msg">Klik tombol ini agar suara pesanan bisa bunyi</p>
     </div>
 
     <div id="admin-order-list">
@@ -51,7 +52,6 @@
 </audio>
 
 <script>
-    // --- CONFIG FIREBASE ---
     const firebaseConfig = {
       apiKey: "AIzaSyAivSWrd8k-7lRDiqkyzauvcas7pndxhg",
       authDomain: "warta-menu-e8351.firebaseapp.com",
@@ -69,17 +69,22 @@
     let lastOrderCount = 0;
     let audioEnabled = false;
 
-    // FUNGSI KHUSUS SAFARI
+    // FUNGSI AKTIVASI UNTUK SEMUA BROWSER
     function aktifkanSuara() {
         const sound = document.getElementById('notif-sound');
+        
+        // Teknik pancingan: Putar suara lalu langsung pause
         sound.play().then(() => {
             sound.pause();
             sound.currentTime = 0;
             audioEnabled = true;
-            document.getElementById('audio-panel').classList.add('hidden');
-            alert("Suara Notifikasi Aktif! Pastikan iPhone tidak dalam mode Silent.");
+            document.getElementById('audio-panel').innerHTML = `
+                <div class="alert alert-success text-center rounded-4 fw-bold small py-2 mb-0">
+                    ✅ Suara Aktif (Pastikan HP tidak Silent)
+                </div>`;
+            console.log("Audio berhasil diaktifkan");
         }).catch(err => {
-            alert("Gagal aktifkan suara. Klik lagi!");
+            alert("Gagal mengaktifkan audio. Pastikan Anda sudah berinteraksi dengan layar.");
         });
     }
 
@@ -99,12 +104,12 @@
         const currentCount = keys.length;
         count.innerText = currentCount;
 
-        // Bunyi jika ada pesanan baru
+        // Logika Bunyi Pesanan Baru
         if (currentCount > lastOrderCount && lastOrderCount !== 0) {
             const sound = document.getElementById('notif-sound');
-            if (sound) {
+            if (sound && audioEnabled) {
                 sound.currentTime = 0;
-                sound.play().catch(e => console.log("Audio diblokir browser"));
+                sound.play().catch(e => console.log("Audio terblokir sistem"));
             }
         }
         lastOrderCount = currentCount;
@@ -126,6 +131,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
                             <h5 class="fw-bold m-0">${ord.customer || 'Tanpa Nama'}</h5>
+                            <span class="text-location">📍 Lokasi: ${ord.location || 'Di tempat'}</span>
                             <small class="text-muted">${ord.waktu || '-'}</small>
                         </div>
                         <span class="badge-status ${isDone ? 'bg-selesai' : 'bg-masuk'}">
