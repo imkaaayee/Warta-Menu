@@ -10,8 +10,8 @@
     
     <style>
         :root { 
-            --primary: #174E4F;    /* Teal Gelap */
-            --accent: #F3E5C3;     /* Cream/Beige */
+            --primary: #174E4F; 
+            --accent: #F3E5C3; 
             --mint: #fdfaf3;
             --dark: #0b2a2a;
         }
@@ -20,34 +20,27 @@
         .app-mobile { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; }
         .hidden { display: none !important; }
         
-        /* HEADER - Diperbaiki agar tidak acak-acakan */
         .header-section { background: var(--primary); height: 110px; border-radius: 0 0 40px 40px; position: relative; display: flex; justify-content: center; z-index: 10; }
         .header-logo { background: var(--accent); padding: 12px 30px; border-radius: 20px; position: absolute; bottom: -20px; box-shadow: 0 10px 25px rgba(23, 78, 79, 0.2); color: var(--primary); font-weight: 900; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* NAV SCROLL - Diperbaiki agar interaktif */
-        .nav-scroll { margin-top: 45px; display: flex; gap: 10px; padding: 15px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .nav-scroll { margin-top: 45px; display: flex; gap: 10px; padding: 15px; overflow-x: auto; scrollbar-width: none; }
         .nav-scroll::-webkit-scrollbar { display: none; }
         .nav-pill { padding: 10px 20px; border-radius: 30px; border: 1.5px solid #eee; background: #f9f9f9; cursor: pointer; white-space: nowrap; font-size: 13px; color: #666; font-weight: 600; transition: 0.3s; flex-shrink: 0; }
         .nav-pill.active { background: var(--primary); color: var(--accent); border-color: var(--primary); box-shadow: 0 5px 15px rgba(23, 78, 79, 0.2); }
         
         .content { flex: 1; padding: 10px 15px 120px 15px; }
         
-        /* KARTU MENU - Diperbaiki layout & klik */
-        .card-menu { background: white; border-radius: 22px; padding: 15px 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }
+        .card-menu { background: white; border-radius: 22px; padding: 15px 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
         .card-menu:active { transform: scale(0.96); background: var(--mint); }
-        .card-menu h6 { margin: 0; font-weight: 700; color: var(--dark); font-size: 15px; }
-        .card-menu p { margin: 2px 0 0 0; font-size: 13px; color: #777; }
         
         .btn-plus { 
             background: var(--primary); color: var(--accent); border: none; width: 36px; height: 36px; border-radius: 12px; font-weight: bold; font-size: 22px;
-            display: flex; align-items: center; justify-content: center; line-height: 0; padding: 0; pointer-events: none; /* Biar klik kartu yang dominan */
+            display: flex; align-items: center; justify-content: center; line-height: 0; padding: 0; pointer-events: none;
         }
 
-        /* FOOTER CART */
         .footer-cart { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: var(--primary); padding: 20px; border-radius: 30px 30px 0 0; color: var(--accent); z-index: 1000; }
         .footer-cart button { border-radius: 15px; font-weight: 800; padding: 12px; color: var(--primary) !important; background: var(--accent) !important; border: none; }
 
-        /* OVERLAYS */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 42, 42, 0.7); z-index: 2000; display: flex; align-items: flex-end; }
         .sheet { background: white; width: 100%; max-width: 480px; border-radius: 35px 35px 0 0; padding: 30px 25px; animation: slideUp 0.3s ease-out; }
         
@@ -122,7 +115,7 @@
         <div class="bg-white rounded-5 p-5 text-center shadow-lg w-100" style="max-width: 400px;">
             <div class="h1 text-success mb-3">✓</div>
             <h4 class="fw-bold">Berhasil!</h4>
-            <p class="text-muted small">Pesanan Anda telah diterima dan sedang diproses.</p>
+            <p class="text-muted small">Pesanan Anda telah diterima.</p>
             <button class="btn w-100 py-3 mt-3 rounded-4 fw-bold" style="background: var(--primary); color: var(--accent);" onclick="location.reload()">OKAY</button>
         </div>
     </div>
@@ -131,7 +124,6 @@
 </div>
 
 <script>
-    // --- FIREBASE CONFIG (Jangan Diubah) ---
     const firebaseConfig = {
       apiKey: "AIzaSyAivSWrd8k-7lRDiqkyzauvcas7pndxhg",
       authDomain: "warta-menu-e8351.firebaseapp.com",
@@ -145,22 +137,42 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.database();
 
-    // DATA MENU
     const menus = [
         { name: 'Indomie Goreng', price: 7000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
-        { name: 'Indomie Rendang', price: 8000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Indomie Rendang (Goreng)', price: 8000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Indomie Aceh (Goreng)', price: 8000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Mie Kari Ayam (Kuah)', price: 7000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Mie Soto (Kuah)', price: 7000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
+        { name: 'Mie Ayam Bawang (Kuah)', price: 7000, cat: 'mie series', addons: [{name:'Telur', price:4000}, {name:'Keju', price:3000}] },
         { name: 'Magelangan', price: 15000, cat: 'magelangan', addons: [] },
+        { name: 'Kentang Goreng', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Otak-otak', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Sosis', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Pisang Bakar', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Pisang Goreng', price: 10000, cat: 'snack', addons: [] },
+        { name: 'Roti Bakar', price: 0, cat: 'snack', addons: [{name:'Keju', price:10000}, {name:'Coklat', price:10000}, {name:'Coklat Keju', price:12000}, {name:'Milo', price:15000}, {name:'Oreo', price:15000}, {name:'Blueberry', price:12000}, {name:'Strawberry', price:12000}] },
         { name: 'Iced Good Day', price: 0, cat: 'coffe', addons: [{name:'Carabian', price:7000}, {name:'Chocochinno', price:7000}, {name:'Cappuchino', price:8000}]},
-        { name: 'Danca', price: 13000, cat: 'non-coffe', addons: [], desc: 'Dancow & Matcha' },
-        { name: 'Dancok', price: 13000, cat: 'non-coffe', addons: [], desc: 'Dancow & Coklat' },
-        { name: 'Kentang Goreng', price: 10000, cat: 'snack', addons: [] }
+        { name: 'Hot Good Day', price: 0, cat: 'coffe', addons: [{name:'Carabian', price:6000}, {name:'Chocochinno', price:6000}, {name:'Cappuchino', price:7000}]},
+        { name: 'Indocafe', price: 0, cat: 'coffe', addons: [{name:'Hot', price:5000}, {name:'Iced', price:6000}] },
+        { name: 'kapal Api', price: 0, cat: 'coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
+        { name: 'Air Putih', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:2000}, {name:'Iced', price:2000}] },
+        { name: 'Esteh', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
+        { name: 'Teh Tarik', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:7000}, {name:'Iced', price:8000}] },
+        { name: 'Danca (Dancow & Matcha)', price: 13000, cat: 'non-coffe', addons: [] },
+        { name: 'Dancok (Dancow & Coklat)', price: 13000, cat: 'non-coffe', addons: [] },
+        { name: 'Milo', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:6000}, {name:'Iced', price:7000}] },
+        { name: 'Chocolatos Coklat', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:7000}, {name:'Iced', price:8000}] },
+        { name: 'Chocolatos Matcha', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:7000}, {name:'Iced', price:8000}] },
+        { name: 'Drink Beng-beng', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:7000}, {name:'Iced', price:8000}] },
+        { name: 'Susu Putih', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
+        { name: 'Susu Coklat', price: 0, cat: 'non-coffe', addons: [{name:'Hot', price:4000}, {name:'Iced', price:5000}] },
+        { name: 'Nutrisari', price: 0, cat: 'non-coffe', addons: [{name:'Sweet Orange', price:5000}, {name:'Milky Orange', price:5000}, {name:'Sweet Mango', price:5000}, {name:'Anggur', price:5000}, {name:'jeruk Peras', price:5000}, {name:'Blewah', price:5000}, {name:'Milky Peach', price:5000}] }
     ];
 
     let cart = [];
     let currentItem = null;
     let selectedPay = 'Cash';
 
-    // FUNGSI INTERAKTIF
     function changeCategory(cat, el) {
         document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
         el.classList.add('active');
@@ -168,11 +180,7 @@
         const filtered = menus.filter(m => m.cat === cat);
         document.getElementById('menu-list').innerHTML = filtered.map(m => `
             <div class="card-menu shadow-sm" onclick="openModal('${m.name}', ${m.price})">
-                <div>
-                    <h6>${m.name}</h6>
-                    ${m.desc ? `<small class="text-muted">${m.desc}</small><br>` : ''}
-                    <p>${m.price === 0 ? 'Pilih Varian' : 'Rp ' + m.price.toLocaleString()}</p>
-                </div>
+                <div><h6>${m.name}</h6><p>${m.price === 0 ? 'Pilih Varian' : 'Rp ' + m.price.toLocaleString()}</p></div>
                 <button class="btn-plus">+</button>
             </div>`).join('');
     }
@@ -187,7 +195,7 @@
                     <span class="small fw-bold">${a.name}</span>
                 </div>
                 <span class="text-success small fw-bold">+Rp ${a.price.toLocaleString()}</span>
-            </div>`).join('') || '<p class="text-muted small text-center py-3">Tidak ada tambahan.</p>';
+            </div>`).join('') || '<p class="text-muted small text-center py-3">Tanpa tambahan.</p>';
 
         document.getElementById('addon-content').innerHTML = `
             <h5 class="fw-bold mb-3">${name}</h5><hr>
@@ -202,21 +210,16 @@
     }
 
     function updateAddonTotal() {
-        let top = 0;
-        document.querySelectorAll('.addon-cb:checked').forEach(cb => top += parseInt(cb.value));
+        let top = 0; document.querySelectorAll('.addon-cb:checked').forEach(cb => top += parseInt(cb.value));
         document.getElementById('addon-total-text').innerText = 'Rp ' + (currentItem.price + top).toLocaleString();
     }
 
     function handleAddToCart() {
         let tops = []; let tPrice = 0;
-        document.querySelectorAll('.addon-cb:checked').forEach(cb => {
-            tops.push(cb.getAttribute('data-name'));
-            tPrice += parseInt(cb.value);
-        });
-        if (currentItem.price === 0 && tops.length === 0) return alert("Pilih varian rasa!");
+        document.querySelectorAll('.addon-cb:checked').forEach(cb => { tops.push(cb.getAttribute('data-name')); tPrice += parseInt(cb.value); });
+        if (currentItem.price === 0 && tops.length === 0) return alert("Pilih varian!");
         cart.push({ name: currentItem.name, tops: tops, total: currentItem.price + tPrice });
-        updateCartBar();
-        closeAddon();
+        updateCartBar(); closeAddon();
     }
 
     function updateCartBar() {
@@ -248,7 +251,7 @@
     }
 
     function processPayment() {
-        if(!document.getElementById('customer-name').value.trim()) return alert("Isi nama kamu ya!");
+        if(!document.getElementById('customer-name').value.trim()) return alert("Isi nama kamu!");
         if(selectedPay === 'QRIS') {
             document.getElementById('page-checkout').classList.add('hidden');
             document.getElementById('page-qris').classList.remove('hidden');
@@ -272,11 +275,8 @@
         const orderData = {
             customer: document.getElementById('customer-name').value,
             location: document.getElementById('customer-location').value || "Di tempat",
-            items: cart,
-            total: cart.reduce((s, i) => s + i.total, 0),
-            payment: method,
-            status: "Masuk",
-            waktu: new Date().toLocaleString()
+            items: cart, total: cart.reduce((s, i) => s + i.total, 0),
+            payment: method, status: "Masuk", waktu: new Date().toLocaleString()
         };
         db.ref('pesanan').push(orderData).then(() => {
             document.getElementById('page-qris').classList.add('hidden');
@@ -288,7 +288,6 @@
     function hideCheckout() { document.getElementById('page-checkout').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); }
     function closeAddon() { document.getElementById('overlay-addon').classList.add('hidden'); }
     
-    // Auto Load Menu
     const cats = ['mie series', 'magelangan', 'coffe', 'non-coffe', 'snack'];
     document.getElementById('nav-container').innerHTML = cats.map((c, i) => `<div class="nav-pill ${i===0?'active':''}" onclick="changeCategory('${c}', this)">${c.toUpperCase()}</div>`).join('');
     window.onload = () => changeCategory('mie series', document.querySelector('.nav-pill'));
