@@ -9,101 +9,130 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
-        :root { --primary: #00c853; }
-        body { background-color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        /* UPDATE PALET WARNA SESUAI GAMBAR REFERENSI */
+        :root { 
+            --primary: #0a6843;    /* Hijau Tua/Teal Dark dari desain */
+            --light-green: #7aba78; /* Hijau Muda untuk aksen */
+            --mint: #f0fdf4;       /* Background sangat muda */
+            --dark: #052e16;
+        }
+        
+        body { background-color: #f8faf9; font-family: 'Segoe UI', sans-serif; margin: 0; color: var(--dark); }
         .app-mobile { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; overflow-x: hidden; }
         .hidden { display: none !important; }
-        .header-section { background: var(--primary); height: 100px; border-radius: 0 0 50% 50% / 0 0 20% 20%; position: relative; display: flex; justify-content: center; }
-        .header-logo { background: white; padding: 10px 25px; border-radius: 15px; position: absolute; bottom: -20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: var(--primary); font-weight: 900; font-size: 20px; text-transform: uppercase; }
-        .nav-scroll { margin-top: 40px; display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; scrollbar-width: none; }
-        .nav-pill { padding: 12px 20px; border-radius: 15px; border: 1px solid #ddd; background: #f1f1f1; cursor: pointer; white-space: nowrap; font-size: 14px; color: #333; font-weight: 600; transition: 0.3s; }
-        .nav-pill.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(0, 200, 83, 0.3); }
-        .content { flex: 1; padding: 15px; }
-        .card-menu { background: white; border-radius: 25px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
         
-        /* PERBAIKAN TOMBOL TAMBAH AGAR PRESISI DI TENGAH */
+        /* HEADER SECTION */
+        .header-section { background: var(--primary); height: 110px; border-radius: 0 0 40px 40px; position: relative; display: flex; justify-content: center; }
+        .header-logo { background: white; padding: 12px 30px; border-radius: 20px; position: absolute; bottom: -20px; box-shadow: 0 10px 25px rgba(10, 104, 67, 0.2); color: var(--primary); font-weight: 900; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* NAVIGATION PILLS */
+        .nav-scroll { margin-top: 45px; display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; scrollbar-width: none; }
+        .nav-pill { padding: 10px 18px; border-radius: 30px; border: 1.5px solid #eee; background: white; cursor: pointer; white-space: nowrap; font-size: 13px; color: #666; font-weight: 600; transition: 0.3s; }
+        .nav-pill.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 8px 15px rgba(10, 104, 67, 0.2); }
+        
+        .content { flex: 1; padding: 20px 15px; }
+        
+        /* MENU CARD */
+        .card-menu { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
+        .card-menu:active { transform: scale(0.98); background: var(--mint); }
+        
         .btn-plus { 
             background: var(--primary); 
             color: white; 
             border: none; 
-            width: 35px; 
-            height: 35px; 
-            border-radius: 10px; 
+            width: 38px; 
+            height: 38px; 
+            border-radius: 12px; 
             font-weight: bold; 
-            font-size: 20px;
-            display: flex;            /* Mengaktifkan flexbox */
-            align-items: center;      /* Menyelaraskan vertikal */
-            justify-content: center;   /* Menyelaraskan horizontal */
-            line-height: 0;           /* Menghapus spasi baris default browser */
-            padding: 0;               /* Menghapus padding default */
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 0;
+            padding: 0;
+            box-shadow: 0 4px 10px rgba(10, 104, 67, 0.15);
         }
 
-        .footer-cart { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: var(--primary); padding: 20px; border-radius: 25px 25px 0 0; color: white; z-index: 999; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: flex-end; }
-        .sheet { background: white; width: 100%; max-width: 480px; border-radius: 30px 30px 0 0; padding: 25px; animation: slideUp 0.3s ease-out; }
-        .overlay-success { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .popup-card { background: white; width: 100%; max-width: 400px; border-radius: 35px; padding: 35px; text-align: center; position: relative; }
-        .check-icon { width: 90px; height: 90px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; margin: -80px auto 20px; border: 8px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        /* FOOTER CART */
+        .footer-cart { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: var(--primary); padding: 18px 20px 25px; border-radius: 30px 30px 0 0; color: white; z-index: 999; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); }
+        .footer-cart button { border-radius: 15px; height: 55px; letter-spacing: 1px; color: var(--primary) !important; }
+
+        /* OVERLAYS & SHEETS */
+        .sheet { background: white; width: 100%; max-width: 480px; border-radius: 35px 35px 0 0; padding: 30px 25px; animation: slideUp 0.3s ease-out; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 46, 22, 0.6); z-index: 1000; display: flex; align-items: flex-end; }
+        
+        /* SUCCESS POPUP */
+        .overlay-success { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 46, 22, 0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .check-icon { width: 85px; height: 85px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: -75px auto 20px; border: 6px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        
         .qris-screen { background: var(--primary); color: white; min-height: 100vh; text-align: center; padding: 40px 20px; }
-        .upload-area { border: 2px dashed rgba(255,255,255,0.5); padding: 20px; border-radius: 20px; margin: 20px 0; cursor: pointer; }
-        .disabled { opacity: 0.5; pointer-events: none; }
+        .btn-success { background-color: var(--primary); border-color: var(--primary); }
+        .btn-success:hover { background-color: var(--dark); border-color: var(--dark); }
+
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="app-mobile shadow">
+<div class="app-mobile shadow-lg">
     <div id="page-home">
         <div class="header-section"><div class="header-logo">WARTA MENU</div></div>
         <div class="nav-scroll" id="nav-container"></div>
         <div class="content">
-            <h5 class="fw-bold mb-3" id="cat-title">Best Sellers</h5>
+            <h5 class="fw-bold mb-4" id="cat-title">Best Sellers</h5>
             <div id="menu-list"></div>
         </div>
         <div id="cart-bar" class="footer-cart hidden">
-            <div class="d-flex justify-content-between fw-bold mb-2 px-2">
-                <span id="qty-text">0 item</span>
-                <span id="total-text">Rp 0</span>
+            <div class="d-flex justify-content-between fw-bold mb-3 px-2">
+                <span id="qty-text" style="opacity: 0.9; font-size: 14px;">0 item</span>
+                <span id="total-text" style="font-size: 18px;">Rp 0</span>
             </div>
-            <button class="btn btn-light w-100 fw-bold py-3 rounded-4 text-success shadow-sm" onclick="showCheckout()">LIHAT PESANAN</button>
+            <button class="btn btn-light w-100 fw-bold shadow-sm" onclick="showCheckout()">LIHAT PESANAN</button>
         </div>
     </div>
 
     <div id="page-checkout" class="hidden p-4 bg-white" style="min-height: 100vh;">
         <div class="d-flex align-items-center mb-4">
-            <button class="btn btn-light rounded-circle me-3" onclick="hideCheckout()">✕</button>
-            <h5 class="fw-bold m-0 text-muted">Pesanan</h5>
+            <button class="btn btn-light rounded-circle me-3 shadow-sm" onclick="hideCheckout()">✕</button>
+            <h5 class="fw-bold m-0 text-dark">Detail Pesanan</h5>
         </div>
-        <div class="mb-4">
+        <div class="mb-3">
             <label class="fw-bold text-muted small mb-2">Nama Pemesan</label>
             <input type="text" id="customer-name" class="form-control py-3 rounded-4 bg-light border-0 px-4" placeholder="Ketik nama kamu...">
         </div>
+        <div class="mb-4">
+            <label class="fw-bold text-muted small mb-2">Lokasi / Nomor Meja (Opsional)</label>
+            <input type="text" id="customer-location" class="form-control py-3 rounded-4 bg-light border-0 px-4" placeholder="Contoh: Meja 5 atau Depan Rumah...">
+        </div>
+        
         <div id="checkout-items" class="mb-4"></div>
-        <h6 class="fw-bold text-muted mb-3">Metode Pembayaran</h6>
+        
+        <h6 class="fw-bold text-muted mb-3 small">Metode Pembayaran</h6>
         <div class="d-flex gap-3 mb-5">
             <div id="pill-cash" class="nav-pill active flex-fill text-center py-3" onclick="setPayment('Cash', this)">Cash</div>
             <div id="pill-qris" class="nav-pill flex-fill text-center py-3" onclick="setPayment('QRIS', this)">QRIS</div>
         </div>
+        
         <div class="mt-auto pt-4 border-top">
             <div class="d-flex justify-content-between h4 fw-bold mb-4">
-                <span class="text-muted">Total</span>
-                <span id="checkout-total-text">Rp 0</span>
+                <span class="text-muted" style="font-size: 16px;">Total Pembayaran</span>
+                <span id="checkout-total-text" class="text-dark">Rp 0</span>
             </div>
-            <button class="btn btn-success w-100 py-4 rounded-4 fw-bold shadow-lg" onclick="processPayment()">KONFIRMASI</button>
+            <button class="btn btn-success w-100 py-4 rounded-4 fw-bold shadow-lg" onclick="processPayment()">KONFIRMASI PESANAN</button>
         </div>
     </div>
 
     <div id="page-qris" class="qris-screen hidden">
         <div class="d-flex justify-content-between mb-4"><h5 class="fw-bold">Pembayaran QRIS</h5><span onclick="showCheckout()" style="cursor:pointer">✕</span></div>
         <div class="bg-white p-4 d-inline-block rounded-4 mb-4 shadow-lg">
-            <img src="WARTA QRIS.jpeg" width="200">
+            <img src="WARTA QRIS.jpeg" width="220" class="rounded-2">
         </div>
         <h2 class="fw-bold mb-4" id="qris-total-display">Rp 0</h2>
         <div class="upload-area" onclick="document.getElementById('upload-ss').click()">
             <p class="small fw-bold mb-2 text-white">Upload Bukti Screenshot</p>
             <input type="file" id="upload-ss" accept="image/*" class="hidden" onchange="previewImage(this)">
             <div id="preview-container" class="hidden mt-2"><img id="preview-ss" src="#" class="img-fluid rounded-3" style="max-height: 150px;"></div>
-            <span id="upload-placeholder" class="small opacity-75">Ketuk untuk pilih foto</span>
+            <span id="upload-placeholder" class="small opacity-75">Ketuk untuk pilih foto dari galeri</span>
         </div>
         <button id="btn-konfirmasi-qris" class="btn btn-light text-success fw-bold w-100 py-3 rounded-4 disabled shadow" onclick="finishOrder('QRIS')">KONFIRMASI PEMBAYARAN</button>
     </div>
@@ -111,18 +140,18 @@
     <div id="page-success" class="overlay-success hidden">
         <div class="popup-card shadow-lg">
             <div class="check-icon">✓</div>
-            <h6 class="text-muted fw-bold mb-1">Thank You</h6>
+            <h6 class="text-muted fw-bold mb-1">Thank You!</h6>
             <h4 class="fw-bold mb-1" id="success-title">Pesanan Diterima</h4>
-            <p class="small text-muted mb-4" style="font-size: 11px;">Pesanan Anda sedang diproses</p>
+            <p class="small text-muted mb-4">Pesanan Anda sedang kami proses</p>
             <hr>
             <div class="text-start mb-4">
-                <p class="fw-bold mb-2 small">Pesanan</p>
+                <p class="fw-bold mb-2 small text-muted">Ringkasan:</p>
                 <div id="success-items-list" class="small"></div>
             </div>
-            <p class="text-muted small mb-0 fw-bold">TOTAL PEMBAYARAN</p>
-            <h2 class="fw-bold mb-4" id="success-total-text">Rp 0</h2>
+            <p class="text-muted small mb-0 fw-bold">TOTAL BAYAR</p>
+            <h2 class="fw-bold mb-4" id="success-total-text" style="color: var(--primary);">Rp 0</h2>
             <p id="success-msg" class="text-muted small mb-4 px-3"></p>
-            <button class="btn btn-success w-100 py-3 rounded-4 fw-bold shadow" onclick="location.reload()">SELESAI</button>
+            <button class="btn btn-success w-100 py-3 rounded-4 fw-bold shadow" onclick="location.reload()">KEMBALI KE MENU</button>
         </div>
     </div>
 
@@ -130,7 +159,6 @@
 </div>
 
 <script>
-    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
       apiKey: "AIzaSyAivSWrd8k-7lRDiqkyzauvcas7pndxhg",
       authDomain: "warta-menu-e8351.firebaseapp.com",
@@ -188,7 +216,7 @@
         const filtered = menus.filter(m => m.cat === cat);
         document.getElementById('menu-list').innerHTML = filtered.map(m => `
             <div class="card-menu shadow-sm" onclick="openModal('${m.name}', ${m.price})">
-                <div><h6>${m.name}</h6><p class="text-muted m-0">${m.price === 0 ? 'Pilih Varian' : 'Rp ' + m.price.toLocaleString()}</p></div>
+                <div><h6>${m.name}</h6><p class="text-muted m-0 small">${m.price === 0 ? 'Pilih Varian' : 'Rp ' + m.price.toLocaleString()}</p></div>
                 <button class="btn-plus">+</button>
             </div>`).join('');
     }
@@ -197,22 +225,22 @@
         const menuData = menus.find(m => m.name === name);
         currentItem = { name, price };
         let addonHtml = menuData.addons.map(a => `
-            <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded-3 bg-light">
                 <div class="d-flex align-items-center gap-2">
-                    <input type="checkbox" class="addon-cb" value="${a.price}" data-name="${a.name}" onchange="updateAddonTotal()">
-                    <span class="small">${a.name}</span>
+                    <input type="checkbox" class="addon-cb" value="${a.price}" data-name="${a.name}" onchange="updateAddonTotal()" style="width: 18px; height: 18px;">
+                    <span class="small fw-bold">${a.name}</span>
                 </div>
                 <span class="text-success fw-bold small">+Rp ${a.price.toLocaleString()}</span>
-            </div>`).join('') || '<p class="text-muted small">Tanpa tambahan.</p>';
+            </div>`).join('') || '<p class="text-muted small text-center py-3">Tidak ada tambahan tersedia.</p>';
 
         document.getElementById('addon-content').innerHTML = `
-            <h5 class="fw-bold mb-3">${name}</h5><hr>
-            <p class="fw-bold small mb-3">Varian/Topping</p>
+            <h5 class="fw-bold mb-3 text-dark">${name}</h5><hr>
+            <p class="fw-bold small mb-3 text-muted">PILIH VARIAN/TOPPING</p>
             ${addonHtml}
-            <div class="d-flex justify-content-between fw-bold h5 my-4 pt-3 border-top">
-                <span>Total</span><span id="addon-total-text">Rp ${price.toLocaleString()}</span>
+            <div class="d-flex justify-content-between fw-bold h5 my-4 pt-3 border-top text-dark">
+                <span>Total</span><span id="addon-total-text" class="text-success">Rp ${price.toLocaleString()}</span>
             </div>
-            <button class="btn btn-success w-100 py-3 rounded-4 fw-bold shadow" onclick="handleAddToCart()">TAMBAHKAN</button>
+            <button class="btn btn-success w-100 py-3 rounded-4 fw-bold shadow-lg" onclick="handleAddToCart()">TAMBAHKAN KE KERANJANG</button>
             <button class="btn btn-link w-100 text-muted mt-2 small text-decoration-none" onclick="closeAddon()">Batal</button>`;
         document.getElementById('overlay-addon').classList.remove('hidden');
     }
@@ -241,7 +269,7 @@
         if(cart.length > 0) {
             cartBar.classList.remove('hidden');
             let t = cart.reduce((s, i) => s + i.total, 0);
-            document.getElementById('qty-text').innerText = cart.length + ' item';
+            document.getElementById('qty-text').innerText = cart.length + ' item terpilih';
             document.getElementById('total-text').innerText = 'Rp ' + t.toLocaleString();
         } else { cartBar.classList.add('hidden'); }
     }
@@ -253,8 +281,8 @@
         const list = document.getElementById('checkout-items');
         list.innerHTML = cart.map(i => `
             <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                <span><span class="fw-bold">${i.name}</span><br><small class="text-muted">${i.tops.join(', ')}</small></span>
-                <span class="fw-bold">Rp ${i.total.toLocaleString()}</span>
+                <span><span class="fw-bold text-dark">${i.name}</span><br><small class="text-muted">${i.tops.join(', ') || 'Polos'}</small></span>
+                <span class="fw-bold text-dark">Rp ${i.total.toLocaleString()}</span>
             </div>`).join('');
         document.getElementById('checkout-total-text').innerText = 'Rp ' + cart.reduce((s,i)=>s+i.total,0).toLocaleString();
     }
@@ -283,6 +311,8 @@
                 document.getElementById('preview-container').classList.remove('hidden');
                 document.getElementById('upload-placeholder').classList.add('hidden');
                 document.getElementById('btn-konfirmasi-qris').classList.remove('disabled');
+                document.getElementById('btn-konfirmasi-qris').classList.replace('btn-light', 'btn-success');
+                document.getElementById('btn-konfirmasi-qris').style.color = 'white';
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -291,6 +321,7 @@
     function finishOrder(method) {
         const orderData = {
             customer: document.getElementById('customer-name').value,
+            location: document.getElementById('customer-location').value || "Di tempat",
             items: cart,
             total: cart.reduce((s, i) => s + i.total, 0),
             payment: method,
@@ -305,22 +336,18 @@
             document.getElementById('success-total-text').innerText = 'Rp ' + orderData.total.toLocaleString();
             document.getElementById('success-items-list').innerHTML = cart.map(i => `
                 <div class="d-flex justify-content-between mb-1">
-                    <span>${i.name}</span><span>Rp ${i.total.toLocaleString()}</span>
+                    <span>${i.name}</span><span class="fw-bold">Rp ${i.total.toLocaleString()}</span>
                 </div>`).join('');
-            document.getElementById('success-msg').innerText = method === 'Cash' ? "Silahkan ke Kasir untuk membayar" : "Pesanan Anda sedang diproses";
-        }).catch(err => alert("Error: " + err.message));
+            document.getElementById('success-msg').innerText = method === 'Cash' ? "Silakan tunjukkan layar ini ke Kasir untuk membayar." : "Pesanan Anda sudah masuk sistem dan sedang diproses.";
+        }).catch(err => alert("Error koneksi: " + err.message));
     }
 
     function hideCheckout() { document.getElementById('page-checkout').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); }
     function closeAddon() { document.getElementById('overlay-addon').classList.add('hidden'); }
     
-    // Auto Load Menu
     const cats = ['mie series', 'magelangan', 'coffe', 'non-coffe', 'snack'];
     document.getElementById('nav-container').innerHTML = cats.map((c, i) => `<div class="nav-pill ${i===0?'active':''}" onclick="changeCategory('${c}', this)">${c.toUpperCase()}</div>`).join('');
     window.onload = () => changeCategory('mie series', document.querySelector('.nav-pill'));
 </script>
 </body>
 </html>
-
-
-
