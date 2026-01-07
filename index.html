@@ -9,26 +9,26 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
-        /* UPDATE PALET WARNA SESUAI GAMBAR REFERENSI */
+        /* UPDATE PALET WARNA PILIHAN CUSTOM */
         :root { 
-            --primary: #0a6843;    /* Hijau Tua/Teal Dark dari desain */
-            --light-green: #7aba78; /* Hijau Muda untuk aksen */
-            --mint: #f0fdf4;       /* Background sangat muda */
-            --dark: #052e16;
+            --primary: #174E4F;    /* Teal Gelap pilihanmu */
+            --accent: #F3E5C3;     /* Cream/Beige pilihanmu */
+            --mint: #fdfaf3;       /* Varian sangat muda dari beige */
+            --dark: #0b2a2a;
         }
         
-        body { background-color: #f8faf9; font-family: 'Segoe UI', sans-serif; margin: 0; color: var(--dark); }
+        body { background-color: var(--accent); font-family: 'Segoe UI', sans-serif; margin: 0; color: var(--dark); }
         .app-mobile { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; overflow-x: hidden; }
         .hidden { display: none !important; }
         
         /* HEADER SECTION */
         .header-section { background: var(--primary); height: 110px; border-radius: 0 0 40px 40px; position: relative; display: flex; justify-content: center; }
-        .header-logo { background: white; padding: 12px 30px; border-radius: 20px; position: absolute; bottom: -20px; box-shadow: 0 10px 25px rgba(10, 104, 67, 0.2); color: var(--primary); font-weight: 900; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
+        .header-logo { background: var(--accent); padding: 12px 30px; border-radius: 20px; position: absolute; bottom: -20px; box-shadow: 0 10px 25px rgba(23, 78, 79, 0.2); color: var(--primary); font-weight: 900; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
         
         /* NAVIGATION PILLS */
         .nav-scroll { margin-top: 45px; display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; scrollbar-width: none; }
         .nav-pill { padding: 10px 18px; border-radius: 30px; border: 1.5px solid #eee; background: white; cursor: pointer; white-space: nowrap; font-size: 13px; color: #666; font-weight: 600; transition: 0.3s; }
-        .nav-pill.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 8px 15px rgba(10, 104, 67, 0.2); }
+        .nav-pill.active { background: var(--primary); color: var(--accent); border-color: var(--primary); box-shadow: 0 8px 15px rgba(23, 78, 79, 0.2); }
         
         .content { flex: 1; padding: 20px 15px; }
         
@@ -38,7 +38,7 @@
         
         .btn-plus { 
             background: var(--primary); 
-            color: white; 
+            color: var(--accent); 
             border: none; 
             width: 38px; 
             height: 38px; 
@@ -50,25 +50,19 @@
             justify-content: center;
             line-height: 0;
             padding: 0;
-            box-shadow: 0 4px 10px rgba(10, 104, 67, 0.15);
         }
 
         /* FOOTER CART */
-        .footer-cart { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: var(--primary); padding: 18px 20px 25px; border-radius: 30px 30px 0 0; color: white; z-index: 999; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); }
-        .footer-cart button { border-radius: 15px; height: 55px; letter-spacing: 1px; color: var(--primary) !important; }
+        .footer-cart { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: var(--primary); padding: 18px 20px 25px; border-radius: 30px 30px 0 0; color: var(--accent); z-index: 999; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); }
+        .footer-cart button { border-radius: 15px; height: 55px; letter-spacing: 1px; color: var(--primary) !important; background-color: var(--accent) !important; border: none; }
 
-        /* OVERLAYS & SHEETS */
-        .sheet { background: white; width: 100%; max-width: 480px; border-radius: 35px 35px 0 0; padding: 30px 25px; animation: slideUp 0.3s ease-out; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 46, 22, 0.6); z-index: 1000; display: flex; align-items: flex-end; }
+        /* OVERLAYS & SUCCESS POPUP */
+        .overlay-success { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 42, 42, 0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .check-icon { width: 85px; height: 85px; background: var(--primary); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: -75px auto 20px; border: 6px solid var(--accent); }
         
-        /* SUCCESS POPUP */
-        .overlay-success { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 46, 22, 0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .check-icon { width: 85px; height: 85px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: -75px auto 20px; border: 6px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .qris-screen { background: var(--primary); color: var(--accent); min-height: 100vh; text-align: center; padding: 40px 20px; }
+        .btn-success { background-color: var(--primary); border-color: var(--primary); color: var(--accent); }
         
-        .qris-screen { background: var(--primary); color: white; min-height: 100vh; text-align: center; padding: 40px 20px; }
-        .btn-success { background-color: var(--primary); border-color: var(--primary); }
-        .btn-success:hover { background-color: var(--dark); border-color: var(--dark); }
-
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
@@ -84,7 +78,7 @@
         </div>
         <div id="cart-bar" class="footer-cart hidden">
             <div class="d-flex justify-content-between fw-bold mb-3 px-2">
-                <span id="qty-text" style="opacity: 0.9; font-size: 14px;">0 item</span>
+                <span id="qty-text" style="opacity: 0.9; font-size: 14px;">0 item terpilih</span>
                 <span id="total-text" style="font-size: 18px;">Rp 0</span>
             </div>
             <button class="btn btn-light w-100 fw-bold shadow-sm" onclick="showCheckout()">LIHAT PESANAN</button>
@@ -94,7 +88,7 @@
     <div id="page-checkout" class="hidden p-4 bg-white" style="min-height: 100vh;">
         <div class="d-flex align-items-center mb-4">
             <button class="btn btn-light rounded-circle me-3 shadow-sm" onclick="hideCheckout()">✕</button>
-            <h5 class="fw-bold m-0 text-dark">Detail Pesanan</h5>
+            <h5 class="fw-bold m-0">Detail Pesanan</h5>
         </div>
         <div class="mb-3">
             <label class="fw-bold text-muted small mb-2">Nama Pemesan</label>
@@ -102,21 +96,18 @@
         </div>
         <div class="mb-4">
             <label class="fw-bold text-muted small mb-2">Lokasi / Nomor Meja (Opsional)</label>
-            <input type="text" id="customer-location" class="form-control py-3 rounded-4 bg-light border-0 px-4" placeholder="Contoh: Meja 5 atau Depan Rumah...">
+            <input type="text" id="customer-location" class="form-control py-3 rounded-4 bg-light border-0 px-4" placeholder="Contoh: Meja 5...">
         </div>
-        
         <div id="checkout-items" class="mb-4"></div>
-        
         <h6 class="fw-bold text-muted mb-3 small">Metode Pembayaran</h6>
         <div class="d-flex gap-3 mb-5">
             <div id="pill-cash" class="nav-pill active flex-fill text-center py-3" onclick="setPayment('Cash', this)">Cash</div>
             <div id="pill-qris" class="nav-pill flex-fill text-center py-3" onclick="setPayment('QRIS', this)">QRIS</div>
         </div>
-        
         <div class="mt-auto pt-4 border-top">
             <div class="d-flex justify-content-between h4 fw-bold mb-4">
-                <span class="text-muted" style="font-size: 16px;">Total Pembayaran</span>
-                <span id="checkout-total-text" class="text-dark">Rp 0</span>
+                <span class="text-muted" style="font-size: 16px;">Total Bayar</span>
+                <span id="checkout-total-text">Rp 0</span>
             </div>
             <button class="btn btn-success w-100 py-4 rounded-4 fw-bold shadow-lg" onclick="processPayment()">KONFIRMASI PESANAN</button>
         </div>
@@ -128,29 +119,24 @@
             <img src="WARTA QRIS.jpeg" width="220" class="rounded-2">
         </div>
         <h2 class="fw-bold mb-4" id="qris-total-display">Rp 0</h2>
-        <div class="upload-area" onclick="document.getElementById('upload-ss').click()">
-            <p class="small fw-bold mb-2 text-white">Upload Bukti Screenshot</p>
+        <div class="upload-area" style="border: 2px dashed var(--accent)" onclick="document.getElementById('upload-ss').click()">
+            <p class="small fw-bold mb-2">Upload Bukti Screenshot</p>
             <input type="file" id="upload-ss" accept="image/*" class="hidden" onchange="previewImage(this)">
             <div id="preview-container" class="hidden mt-2"><img id="preview-ss" src="#" class="img-fluid rounded-3" style="max-height: 150px;"></div>
-            <span id="upload-placeholder" class="small opacity-75">Ketuk untuk pilih foto dari galeri</span>
+            <span id="upload-placeholder" class="small opacity-75">Klik untuk pilih foto</span>
         </div>
-        <button id="btn-konfirmasi-qris" class="btn btn-light text-success fw-bold w-100 py-3 rounded-4 disabled shadow" onclick="finishOrder('QRIS')">KONFIRMASI PEMBAYARAN</button>
+        <button id="btn-konfirmasi-qris" class="btn btn-light fw-bold w-100 py-3 rounded-4 disabled shadow" style="color: var(--primary)" onclick="finishOrder('QRIS')">KONFIRMASI PEMBAYARAN</button>
     </div>
 
     <div id="page-success" class="overlay-success hidden">
-        <div class="popup-card shadow-lg">
+        <div class="popup-card shadow-lg" style="background: var(--accent); border-radius: 35px; padding: 35px; text-align: center; position: relative;">
             <div class="check-icon">✓</div>
-            <h6 class="text-muted fw-bold mb-1">Thank You!</h6>
-            <h4 class="fw-bold mb-1" id="success-title">Pesanan Diterima</h4>
-            <p class="small text-muted mb-4">Pesanan Anda sedang kami proses</p>
+            <h6 class="text-muted fw-bold mb-1">Success!</h6>
+            <h4 class="fw-bold mb-1">Pesanan Diterima</h4>
             <hr>
-            <div class="text-start mb-4">
-                <p class="fw-bold mb-2 small text-muted">Ringkasan:</p>
-                <div id="success-items-list" class="small"></div>
-            </div>
+            <div id="success-items-list" class="small text-start mb-3"></div>
             <p class="text-muted small mb-0 fw-bold">TOTAL BAYAR</p>
             <h2 class="fw-bold mb-4" id="success-total-text" style="color: var(--primary);">Rp 0</h2>
-            <p id="success-msg" class="text-muted small mb-4 px-3"></p>
             <button class="btn btn-success w-100 py-3 rounded-4 fw-bold shadow" onclick="location.reload()">KEMBALI KE MENU</button>
         </div>
     </div>
@@ -159,6 +145,7 @@
 </div>
 
 <script>
+    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
       apiKey: "AIzaSyAivSWrd8k-7lRDiqkyzauvcas7pndxhg",
       authDomain: "warta-menu-e8351.firebaseapp.com",
@@ -227,7 +214,7 @@
         let addonHtml = menuData.addons.map(a => `
             <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded-3 bg-light">
                 <div class="d-flex align-items-center gap-2">
-                    <input type="checkbox" class="addon-cb" value="${a.price}" data-name="${a.name}" onchange="updateAddonTotal()" style="width: 18px; height: 18px;">
+                    <input type="checkbox" class="addon-cb" value="${a.price}" data-name="${a.name}" onchange="updateAddonTotal()">
                     <span class="small fw-bold">${a.name}</span>
                 </div>
                 <span class="text-success fw-bold small">+Rp ${a.price.toLocaleString()}</span>
@@ -311,8 +298,6 @@
                 document.getElementById('preview-container').classList.remove('hidden');
                 document.getElementById('upload-placeholder').classList.add('hidden');
                 document.getElementById('btn-konfirmasi-qris').classList.remove('disabled');
-                document.getElementById('btn-konfirmasi-qris').classList.replace('btn-light', 'btn-success');
-                document.getElementById('btn-konfirmasi-qris').style.color = 'white';
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -338,8 +323,7 @@
                 <div class="d-flex justify-content-between mb-1">
                     <span>${i.name}</span><span class="fw-bold">Rp ${i.total.toLocaleString()}</span>
                 </div>`).join('');
-            document.getElementById('success-msg').innerText = method === 'Cash' ? "Silakan tunjukkan layar ini ke Kasir untuk membayar." : "Pesanan Anda sudah masuk sistem dan sedang diproses.";
-        }).catch(err => alert("Error koneksi: " + err.message));
+        }).catch(err => alert("Error: " + err.message));
     }
 
     function hideCheckout() { document.getElementById('page-checkout').classList.add('hidden'); document.getElementById('page-home').classList.remove('hidden'); }
